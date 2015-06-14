@@ -1,0 +1,25 @@
+<?xml version="1.0"?>
+<assembly>
+    <id>plugin-tool-assembly</id>
+    <includeBaseDirectory>false</includeBaseDirectory>
+    <formats>
+        <format>zip</format>
+    </formats>
+    <files>
+        <file>
+            <source>../xunit-runner/teamcity-plugin.xml</source>
+            <outputDirectory>/</outputDirectory>
+        </file>
+    </files>
+    <fileSets>
+        <fileSet>
+            <includes>
+                <include>**/*.exe</include>
+                <include>**/*.dll</include>
+            </includes>
+            <directory>../xunit-runner/bin</directory>
+            <outputDirectory>bin/</outputDirectory>
+        </fileSet>
+    </fileSets>
+</assembly>
+

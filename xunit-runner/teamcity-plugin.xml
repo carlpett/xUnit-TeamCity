@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<teamcity-agent-plugin xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                       xsi:noNamespaceSchemaLocation="urn:schemas-jetbrains-com:teamcity-agent-plugin-v1-xml">
+    <tool-deployment>
+        <layout>
+            <executable-files>
+                <include name='bin/1.9.2/xunit.console.clr4.exe'/>
+                <include name='bin/2.0.0/xunit.console.exe'/>
+            </executable-files>
+        </layout>
+    </tool-deployment>
+</teamcity-agent-plugin>
