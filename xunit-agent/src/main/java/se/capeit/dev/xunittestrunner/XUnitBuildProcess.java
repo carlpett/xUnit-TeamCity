@@ -15,12 +15,12 @@ import java.util.Scanner;
 class XUnitBuildProcess extends FutureBasedBuildProcess {
     private final AgentRunningBuild buildingAgent;
     private final BuildRunnerContext context;
-    private final BuildProgressLogger logger;
 
     public XUnitBuildProcess(@NotNull final BuildRunnerContext context) {
+        super(context);
+
         this.context = context;
         this.buildingAgent = context.getBuild();
-        this.logger = buildingAgent.getBuildLogger();
     }
 
     private String getParameter(@NotNull final String parameterName)
@@ -33,8 +33,14 @@ class XUnitBuildProcess extends FutureBasedBuildProcess {
     public BuildFinishedStatus call() throws Exception {
         try {
             String version = getParameter(StringConstants.ParameterName_XUnitVersion);
+            RunnerVersion runner = Runners.getRunner(version);
+            String runtime = getParameter(StringConstants.ParameterName_RuntimeVersion);
+            String platform = getParameter(StringConstants.ParameterName_Platform);
+            logger.message("Runner parameters { Version = " + version + ", runtime = " + runtime + ", platform = " + platform + "}");
+
             File agentToolsDirectory = buildingAgent.getAgentConfiguration().getAgentToolsDirectory();
-            String runnerPath = new File(agentToolsDirectory, "xunit-runner\\bin\\" + version + "\\xunit.console.exe").getPath();
+            String runnerPath = new File(agentToolsDirectory, "xunit-runner\\bin\\" + version + "\\" + runner.getRunnerPath(runtime, platform)).getPath();
+            logger.message("Starting test runner at " + runnerPath);
 
             String rawAssemblyParameters = getParameter(StringConstants.ParameterName_IncludedAssemblies);
             String[] assemblies = rawAssemblyParameters.split(",|;|\n");
@@ -46,6 +52,8 @@ class XUnitBuildProcess extends FutureBasedBuildProcess {
             excludedAssemblies[0] = "**/obj/**"; // Always exclude obj
             for (int i = 0; i < userExcludedAssemblies.length; i++)
                 excludedAssemblies[i + 1] = userExcludedAssemblies[i];
+
+            BuildFinishedStatus status = BuildFinishedStatus.FINISHED_SUCCESS;
 
             // Find the files, and run them through the test runner
             AntPatternFileFinder finder = new AntPatternFileFinder(assemblies, excludedAssemblies, true);
@@ -67,12 +75,16 @@ class XUnitBuildProcess extends FutureBasedBuildProcess {
                     }
                 });
 
-                process.waitFor();
+                int exitCode = process.waitFor();
+                if(exitCode != 0) {
+                    logger.warning("Test runner exited with non-zero status!");
+                    status = BuildFinishedStatus.FINISHED_FAILED; 
+                }
 
                 logger.activityFinished(activityBlockName, DefaultMessagesInfo.BLOCK_TYPE_MODULE);
             }
 
-            return BuildFinishedStatus.FINISHED_SUCCESS;
+            return status;
         }
         catch(Exception e) {
             logger.message("Failed to run tests");
@@ -98,6 +110,7 @@ class XUnitBuildProcess extends FutureBasedBuildProcess {
     private String getCommandLineFlags(String version) {
         // xUnit 2.0 changed format of commandline arguments from /flag to -flag.
         // This is quite crude at the moment, but does the job.
+        // TODO: Migrate this into RunnerVersion or similar
         char majorVersion = version.charAt(0);
         if(majorVersion == '1')
             return "/teamcity";

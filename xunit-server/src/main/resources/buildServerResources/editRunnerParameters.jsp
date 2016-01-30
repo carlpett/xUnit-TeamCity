@@ -5,6 +5,7 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <jsp:useBean id="propertiesBean" scope="request" type="jetbrains.buildServer.controllers.BasePropertiesBean"/>
 <jsp:useBean id="constants" class="se.capeit.dev.xunittestrunner.StringConstants" />
+<jsp:useBean id="runners" class="se.capeit.dev.xunittestrunner.Runners" />
 
 <l:settingsGroup title="Runner Parameters">
     <tr>
@@ -14,10 +15,40 @@
         <td>
             <props:selectProperty
                     name="${constants.parameterName_XUnitVersion}"
-                    enableFilter="true"
+                    id="xunit-version-selector"
                     className="mediumField">
-                <props:option value="2.0.0">2.0.0</props:option>
-                <props:option value="1.9.2">1.9.2</props:option>
+                <c:forEach items="${runners.supportedVersions}" var="ver">
+                    <props:option value="${ver}">${ver}</props:option>
+                </c:forEach>
+            </props:selectProperty>
+        </td>
+    </tr>
+    <tr>
+        <th rowspan="2">
+            <label>.NET Runtime: </label>
+        </th>
+        <td>
+            <label for="${constants.parameterName_Platform}" class="fixedLabel">Platform:</label>
+            <props:selectProperty
+                    name="${constants.parameterName_Platform}"
+                    id="xunit-platform"
+                    className="mediumField version-dependent">
+                <c:forEach items="${runners.supportedPlatforms}" var="platform">
+                    <props:option value="${platform}">${platform}</props:option>
+                </c:forEach>
+            </props:selectProperty>
+        </td>
+    </tr>
+    <tr>
+        <td>
+            <label for="${constants.parameterName_RuntimeVersion}" class="fixedLabel">Version:</label>
+            <props:selectProperty
+                    name="${constants.parameterName_RuntimeVersion}"
+                    id="xunit-runtime-version"
+                    className="mediumField version-dependent">
+                <c:forEach items="${runners.supportedRuntimes}" var="runtime">
+                    <props:option value="${runtime}">${runtime}</props:option>
+                </c:forEach>
             </props:selectProperty>
         </td>
     </tr>
@@ -63,3 +94,48 @@
         </td>
     </tr>
 </l:settingsGroup>
+
+<script type="text/javascript">
+        var featureMatrix = {
+            <c:forEach items="${runners.allRunners}" var="runner" varStatus="outerLoop">
+            "${runner.key}": {
+                "xunit-platform": [<c:forEach items="${runner.value.supportedPlatforms}" var="platform" varStatus="innerLoop">"${platform}"${!innerLoop.last ? ',' : ''}</c:forEach>],
+                "xunit-runtime-version": [<c:forEach items="${runner.value.supportedRuntimes}" var="runtime" varStatus="innerLoop">"${runtime}"${!innerLoop.last ? ',' : ''}</c:forEach>]
+            }${!outerLoop.last ? ',' : ''}
+            </c:forEach>
+        };
+
+        $j(document).ready(function() {
+            $j("select.version-dependent").each(function(idx) {
+                var elem = $j(this);
+                elem.data('options', elem.find("option").detach());
+            });
+
+            $j("#xunit-version-selector").change(function() {
+                var selected = $j(":selected", this).val();
+                var features = featureMatrix[selected];
+                for(var feature in features) {
+                    var enabled = features[feature];
+                    console.log(feature + ':' + enabled);
+                    var featureElement = $j('#' + feature);
+
+                    if(featureElement.is("select")) {
+                        var options = featureElement.data('options').filter(function(idx, elem) { 
+                            return $j.inArray(elem.text, enabled) != -1;
+                        });
+                        featureElement.empty() // Remove all existing options
+                                      .append(options);
+
+                        // TODO: Add some debug element in case featureElement is now empty
+                    }
+                    else {
+                        // TODO: Toggle visibility for non-dropdowns 
+                    }
+                }
+                
+                $j("select.version-dependent").ufd('changeOptions');
+            });
+
+            $j("#xunit-version-selector").change();
+        });
+</script>

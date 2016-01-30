@@ -49,6 +49,8 @@ public class XUnitTestRunType extends RunType {
                     toReturn.add(new InvalidProperty(StringConstants.ParameterName_IncludedAssemblies,
                             "Please enter what assemblies should be included"));
 
+                // TODO: Validate runner supports platform/runtime
+
                 return toReturn;
             }
         };
@@ -66,7 +68,12 @@ public class XUnitTestRunType extends RunType {
 
     @Override
     public Map<String, String> getDefaultRunnerProperties() {
-        return null;
+        HashMap<String, String> defaults = new HashMap<String, String>();
+        defaults.put(StringConstants.ParameterName_XUnitVersion, "2.1.0");
+        defaults.put(StringConstants.ParameterName_Platform, Platforms.MSIL);
+        defaults.put(StringConstants.ParameterName_RuntimeVersion, Runtime.dotNET45);
+
+        return defaults;
     }
 
     @NotNull
@@ -74,6 +81,7 @@ public class XUnitTestRunType extends RunType {
     public List<Requirement> getRunnerSpecificRequirements(@NotNull Map<String, String> runParameters) {
         List<Requirement> requirements = new ArrayList<Requirement>(super.getRunnerSpecificRequirements(runParameters));
         // The console runner is compiled to AnyCPU, just pick x32 to be compatible with both 32/64 bit
+        // TODO: Revise
         requirements.add(new Requirement(DotNetConstants.DOTNET_FRAMEWORK_4_0 + DotNetConstants.X32, null, RequirementType.EXISTS));
         requirements.add(new Requirement("teamcity.tool." + StringConstants.ToolName, null, RequirementType.EXISTS));
 
@@ -86,6 +94,13 @@ public class XUnitTestRunType extends RunType {
         StringBuilder sb = new StringBuilder();
         sb.append("Version ");
         sb.append(parameters.get(StringConstants.ParameterName_XUnitVersion));
+
+        sb.append(" (");
+        sb.append(parameters.get(StringConstants.ParameterName_Platform));
+        sb.append("/");
+        sb.append(parameters.get(StringConstants.ParameterName_RuntimeVersion));
+        sb.append(")");
+        
         sb.append("\nIncluded assemblies: ");
         sb.append(parameters.get(StringConstants.ParameterName_IncludedAssemblies));
 

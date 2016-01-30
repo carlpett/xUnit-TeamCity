@@ -4,8 +4,16 @@
   <parent>
     <artifactId>xunitplugin</artifactId>
     <groupId>se.capeit.dev</groupId>
-    <version>1.0</version>
+    <version>1.1.0</version>
   </parent>
   <artifactId>xunit-common</artifactId>
   <packaging>jar</packaging>
+  <dependencies>
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <version>4.11</version>
+      <scope>test</scope>
+    </dependency>
+  </dependencies>
 </project>

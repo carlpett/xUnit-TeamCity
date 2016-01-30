@@ -22,21 +22,27 @@ import com.intellij.openapi.diagnostic.Logger;
 import jetbrains.buildServer.RunBuildException;
 import jetbrains.buildServer.agent.BuildFinishedStatus;
 import jetbrains.buildServer.agent.BuildProcess;
+import jetbrains.buildServer.agent.BuildProgressLogger;
+import jetbrains.buildServer.agent.BuildRunnerContext;
 import jetbrains.buildServer.log.Loggers;
 import org.jetbrains.annotations.NotNull;
 
 abstract class FutureBasedBuildProcess implements BuildProcess, Callable<BuildFinishedStatus>
 {
-    @NotNull private static final Logger LOG = Loggers.AGENT;
+    @NotNull protected final BuildProgressLogger logger;
     private Future<BuildFinishedStatus> myFuture;
+
+    public FutureBasedBuildProcess(@NotNull final BuildRunnerContext context) {
+        this.logger = context.getBuild().getBuildLogger();
+    }
 
     public void start() throws RunBuildException
     {
         try {
             myFuture = Executors.newSingleThreadExecutor().submit(this);
-            LOG.info("Build process started");
         } catch (final RejectedExecutionException e) {
-            LOG.error("Build process failed to start", e);
+            logger.error("Failed to start build!");
+            logger.exception(e);
             throw new RunBuildException(e);
         }
     }
@@ -53,7 +59,7 @@ abstract class FutureBasedBuildProcess implements BuildProcess, Callable<BuildFi
 
     public void interrupt()
     {
-        LOG.info("Attempt to interrupt build process");
+        logger.message("Attempt to interrupt build process");
         myFuture.cancel(true);
     }
 
@@ -62,14 +68,13 @@ abstract class FutureBasedBuildProcess implements BuildProcess, Callable<BuildFi
     {
         try {
             final BuildFinishedStatus status = myFuture.get();
-            LOG.info("Build process was finished");
             return status;
         } catch (final InterruptedException e) {
             throw new RunBuildException(e);
         } catch (final ExecutionException e) {
             throw new RunBuildException(e);
         } catch (final CancellationException e) {
-            LOG.info("Build process was interrupted", e);
+            logger.exception(e);
             return BuildFinishedStatus.INTERRUPTED;
         }
     }
