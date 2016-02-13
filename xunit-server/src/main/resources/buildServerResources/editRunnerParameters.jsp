@@ -15,6 +15,7 @@
         <td>
             <props:selectProperty
                     name="${constants.parameterName_XUnitVersion}"
+                    enableFilter="true"
                     id="xunit-version-selector"
                     className="mediumField">
                 <c:forEach items="${runners.supportedVersions}" var="ver">
@@ -31,6 +32,7 @@
             <label for="${constants.parameterName_Platform}" class="fixedLabel">Platform:</label>
             <props:selectProperty
                     name="${constants.parameterName_Platform}"
+                    enableFilter="true"
                     id="xunit-platform"
                     className="mediumField version-dependent">
                 <c:forEach items="${runners.supportedPlatforms}" var="platform">
@@ -44,6 +46,7 @@
             <label for="${constants.parameterName_RuntimeVersion}" class="fixedLabel">Version:</label>
             <props:selectProperty
                     name="${constants.parameterName_RuntimeVersion}"
+                    enableFilter="true"
                     id="xunit-runtime-version"
                     className="mediumField version-dependent">
                 <c:forEach items="${runners.supportedRuntimes}" var="runtime">
