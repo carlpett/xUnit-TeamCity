@@ -10,6 +10,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
 import java.io.InputStream;
+import java.util.Map;
 import java.util.Scanner;
 
 class XUnitBuildProcess extends FutureBasedBuildProcess {
@@ -63,7 +64,16 @@ class XUnitBuildProcess extends FutureBasedBuildProcess {
 
                 String filePath = assembly.getAbsolutePath();
                 String commandLineFlags = getCommandLineFlags(version);
-                Process process = new ProcessBuilder(runnerPath, filePath, commandLineFlags).start();
+                ProcessBuilder processBuilder = new ProcessBuilder(runnerPath, filePath, commandLineFlags);
+
+                // Copy environment variables
+                Map<String, String> env = processBuilder.environment();
+                for(Map.Entry<String, String> kvp : context.getBuildParameters().getEnvironmentVariables().entrySet()) {
+                    env.put(kvp.getKey(), kvp.getValue());
+                }
+
+                Process process = processBuilder.start();
+
                 redirectStreamToLogger(process.getInputStream(), new RedirectionTarget() {
                     public void redirect(String s) {
                         logger.message(s);
