@@ -36,7 +36,7 @@ public final class Runners {
             public String getRunnerPath(String runtime, String platform) {
                 StringBuilder sb = new StringBuilder();
                 sb.append("xunit.console");
-                if (runtime.equals(Runtime.dotNET40))
+                if (runtime.equals(Runtime.dotNET40) || runtime.equals(""))
                     sb.append(".clr4");
                 if (platform.equals(Platforms.x86))
                     sb.append(".x86");

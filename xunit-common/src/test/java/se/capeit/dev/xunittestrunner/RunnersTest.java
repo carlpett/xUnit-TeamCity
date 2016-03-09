@@ -17,4 +17,10 @@ public class RunnersTest {
         Assert.assertEquals("xunit.console.x86.exe", runner.getRunnerPath(Runtime.dotNET35, Platforms.x86));
         Assert.assertEquals("xunit.console.exe", runner.getRunnerPath(Runtime.dotNET35, Platforms.MSIL));
     }
+
+    @Test
+    public void testCorrectFallbackFor192() {
+        RunnerVersion runner = Runners.getRunner("1.9.2");
+        Assert.assertEquals("xunit.console.clr4.exe", runner.getRunnerPath("", ""));
+    }
 }
