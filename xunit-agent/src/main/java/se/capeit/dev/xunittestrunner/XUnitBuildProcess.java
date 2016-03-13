@@ -64,6 +64,7 @@ class XUnitBuildProcess extends FutureBasedBuildProcess {
 
                 String filePath = assembly.getAbsolutePath();
                 String commandLineFlags = getCommandLineFlags(version);
+                logger.message("Commandline: " + runnerPath + " " + filePath + " " + commandLineFlags);
                 ProcessBuilder processBuilder = new ProcessBuilder(runnerPath, filePath, commandLineFlags);
 
                 // Copy environment variables
