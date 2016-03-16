@@ -9,6 +9,7 @@ import jetbrains.buildServer.util.AntPatternFileFinder;
 import jetbrains.buildServer.util.StringUtil;
 import jetbrains.buildServer.util.CollectionsUtil;
 import org.jetbrains.annotations.NotNull;
+import com.intellij.openapi.util.SystemInfo;
 
 import java.io.File;
 import java.io.InputStream;
@@ -59,7 +60,10 @@ class XUnitBuildProcess extends FutureBasedBuildProcess {
             BuildFinishedStatus status = BuildFinishedStatus.FINISHED_SUCCESS;
 
             // Find the files, and run them through the test runner
-            AntPatternFileFinder finder = new AntPatternFileFinder(CollectionsUtil.toStringArray(assemblies), CollectionsUtil.toStringArray(excludedAssemblies), true);
+            AntPatternFileFinder finder = new AntPatternFileFinder(
+                CollectionsUtil.toStringArray(assemblies),
+                CollectionsUtil.toStringArray(excludedAssemblies),
+                SystemInfo.isFileSystemCaseSensitive);
             File[] assemblyFiles = finder.findFiles(context.getWorkingDirectory());
             if(assemblyFiles.length == 0) {
                 logger.warning("No assemblies were matched - no tests will be run!");
