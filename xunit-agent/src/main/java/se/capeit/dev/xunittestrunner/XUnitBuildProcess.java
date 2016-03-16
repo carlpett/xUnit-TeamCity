@@ -6,11 +6,14 @@ import jetbrains.buildServer.agent.BuildProgressLogger;
 import jetbrains.buildServer.agent.BuildRunnerContext;
 import jetbrains.buildServer.messages.DefaultMessagesInfo;
 import jetbrains.buildServer.util.AntPatternFileFinder;
+import jetbrains.buildServer.util.StringUtil;
+import jetbrains.buildServer.util.CollectionsUtil;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
 import java.io.InputStream;
 import java.util.Map;
+import java.util.List;
 import java.util.Scanner;
 
 class XUnitBuildProcess extends FutureBasedBuildProcess {
@@ -31,6 +34,12 @@ class XUnitBuildProcess extends FutureBasedBuildProcess {
         return value.trim();
     }
 
+    private List<String> getAssemblies(final String rawAssemblyParameter) {
+        String withSlashesFixed = rawAssemblyParameter.replace('\\','/');
+        List<String> assemblies = StringUtil.split(withSlashesFixed, true, ',', ';', '\n', '\r');
+        return assemblies;
+    }
+
     public BuildFinishedStatus call() throws Exception {
         try {
             String version = getParameter(StringConstants.ParameterName_XUnitVersion);
@@ -43,21 +52,14 @@ class XUnitBuildProcess extends FutureBasedBuildProcess {
             String runnerPath = new File(agentToolsDirectory, "xunit-runner\\bin\\" + version + "\\" + runner.getRunnerPath(runtime, platform)).getPath();
             logger.message("Starting test runner at " + runnerPath);
 
-            String rawAssemblyParameters = getParameter(StringConstants.ParameterName_IncludedAssemblies);
-            String[] assemblies = rawAssemblyParameters.split(",|;|\n");
-
-            // Build the exclusion list. We always exclude **/obj/**, but if the user has added other patterns, add those
-            String rawUserExcludedAssemblies = getParameter(StringConstants.ParameterName_ExcludedAssemblies);
-            String[] userExcludedAssemblies = rawUserExcludedAssemblies.split(",|;|\n");
-            String[] excludedAssemblies = new String[1 + userExcludedAssemblies.length];
-            excludedAssemblies[0] = "**/obj/**"; // Always exclude obj
-            for (int i = 0; i < userExcludedAssemblies.length; i++)
-                excludedAssemblies[i + 1] = userExcludedAssemblies[i];
+            List<String> assemblies = getAssemblies(getParameter(StringConstants.ParameterName_IncludedAssemblies));
+            List<String> excludedAssemblies = getAssemblies(getParameter(StringConstants.ParameterName_ExcludedAssemblies));
+            excludedAssemblies.add("**/obj/**"); // We always exclude **/obj/**
 
             BuildFinishedStatus status = BuildFinishedStatus.FINISHED_SUCCESS;
 
             // Find the files, and run them through the test runner
-            AntPatternFileFinder finder = new AntPatternFileFinder(assemblies, excludedAssemblies, true);
+            AntPatternFileFinder finder = new AntPatternFileFinder(CollectionsUtil.toStringArray(assemblies), CollectionsUtil.toStringArray(excludedAssemblies), true);
             File[] assemblyFiles = finder.findFiles(context.getWorkingDirectory());
             if(assemblyFiles.length == 0) {
                 logger.warning("No assemblies were matched - no tests will be run!");
