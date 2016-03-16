@@ -58,7 +58,11 @@ class XUnitBuildProcess extends FutureBasedBuildProcess {
 
             // Find the files, and run them through the test runner
             AntPatternFileFinder finder = new AntPatternFileFinder(assemblies, excludedAssemblies, true);
-            for(File assembly : finder.findFiles(context.getWorkingDirectory())) {
+            File[] assemblyFiles = finder.findFiles(context.getWorkingDirectory());
+            if(assemblyFiles.length == 0) {
+                logger.warning("No assemblies were matched - no tests will be run!");
+            }
+            for(File assembly : assemblyFiles) {
                 String activityBlockName = "Testing " + assembly.getName();
                 logger.activityStarted(activityBlockName, assembly.getAbsolutePath(), DefaultMessagesInfo.BLOCK_TYPE_MODULE);
 
