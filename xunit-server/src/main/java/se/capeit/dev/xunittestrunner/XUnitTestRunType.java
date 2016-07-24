@@ -80,9 +80,29 @@ public class XUnitTestRunType extends RunType {
     @Override
     public List<Requirement> getRunnerSpecificRequirements(@NotNull Map<String, String> runParameters) {
         List<Requirement> requirements = new ArrayList<Requirement>(super.getRunnerSpecificRequirements(runParameters));
-        // The console runner is compiled to AnyCPU, just pick x32 to be compatible with both 32/64 bit
-        // TODO: Revise
-        requirements.add(new Requirement(DotNetConstants.DOTNET_FRAMEWORK_4_0 + DotNetConstants.X32, null, RequirementType.EXISTS));
+
+        String runtime = runParameters.get(StringConstants.ParameterName_RuntimeVersion);
+        String frameworkMatcher = null;
+        if (runtime.equals(Runtime.dotNET35)) {
+            frameworkMatcher = "3.5"; // Match just 3.5
+        }
+        else if (runtime.equals(Runtime.dotNET40)) {
+            frameworkMatcher = "4.[0-9\\.]+"; // Match any 4.x
+        }
+        else if (runtime.equals(Runtime.dotNET45)) {
+            frameworkMatcher = "4.[56](\\.[0-9]+)?"; // Match 4.5+
+        }
+
+        String platform = runParameters.get(StringConstants.ParameterName_Platform);
+        String platformMatcher = null;
+        if (platform.equals(Platforms.MSIL)) {
+            platformMatcher = "(x86|x64)";
+        }
+        else {
+            platformMatcher = platform;
+        }
+
+        requirements.add(new Requirement("Exists=>DotNetFramework" + frameworkMatcher + "_" + platformMatcher, null, RequirementType.EXISTS));
         requirements.add(new Requirement("teamcity.tool." + StringConstants.ToolName, null, RequirementType.EXISTS));
 
         return requirements;
