@@ -20,6 +20,7 @@ import java.util.Scanner;
 class XUnitBuildProcess extends FutureBasedBuildProcess {
     private final AgentRunningBuild buildingAgent;
     private final BuildRunnerContext context;
+    private Process testRunnerProcess;
 
     public XUnitBuildProcess(@NotNull final BuildRunnerContext context) {
         super(context);
@@ -39,6 +40,13 @@ class XUnitBuildProcess extends FutureBasedBuildProcess {
         String withSlashesFixed = rawAssemblyParameter.replace('\\','/');
         List<String> assemblies = StringUtil.split(withSlashesFixed, true, ',', ';', '\n', '\r');
         return assemblies;
+    }
+
+    protected void cancelBuild() {
+        if (testRunnerProcess == null)
+            return;
+
+        testRunnerProcess.destroy();
     }
 
     public BuildFinishedStatus call() throws Exception {
@@ -83,20 +91,20 @@ class XUnitBuildProcess extends FutureBasedBuildProcess {
                     env.put(kvp.getKey(), kvp.getValue());
                 }
 
-                Process process = processBuilder.start();
+                testRunnerProcess = processBuilder.start();
 
-                redirectStreamToLogger(process.getInputStream(), new RedirectionTarget() {
+                redirectStreamToLogger(testRunnerProcess.getInputStream(), new RedirectionTarget() {
                     public void redirect(String s) {
                         logger.message(s);
                     }
                 });
-                redirectStreamToLogger(process.getErrorStream(), new RedirectionTarget() {
+                redirectStreamToLogger(testRunnerProcess.getErrorStream(), new RedirectionTarget() {
                     public void redirect(String s) {
                         logger.warning(s);
                     }
                 });
 
-                int exitCode = process.waitFor();
+                int exitCode = testRunnerProcess.waitFor();
                 if(exitCode != 0) {
                     logger.warning("Test runner exited with non-zero status!");
                     status = BuildFinishedStatus.FINISHED_FAILED; 
