@@ -82,6 +82,28 @@ public class XUnitTestRunType extends RunType {
         List<Requirement> requirements = new ArrayList<Requirement>(super.getRunnerSpecificRequirements(runParameters));
 
         String runtime = runParameters.get(StringConstants.ParameterName_RuntimeVersion);
+        String platform = runParameters.get(StringConstants.ParameterName_Platform);
+        // 1.0 of the plugin did not set runtime/platform, because only a single version was supported
+        // For upgrades we need to manually set runtime/platform
+        if(runtime == null || platform == null) {
+            String xUnitVersion = runParameters.get(StringConstants.ParameterName_XUnitVersion);
+            switch(xUnitVersion) {
+                case "1.9.2":
+                    runtime = Runtime.dotNET40;
+                    platform = Platforms.MSIL;
+                    break;
+                case "2.0.0":
+                    runtime = Runtime.dotNET45;
+                    platform = Platforms.MSIL;
+                    break;
+                default:
+                    // The famous last words, "This should never happen". But, if it does, let's just ask the user to
+                    // re-set the values in their build config
+                    requirements.add(new Requirement("xUnit-plugin: Invalid configuration, unable to build. Please verify build step settings", null, RequirementType.EXISTS));
+                    return requirements;
+            }
+        }
+
         String frameworkMatcher = null;
         if (runtime.equals(Runtime.dotNET35)) {
             frameworkMatcher = "3.5"; // Match just 3.5
@@ -93,7 +115,6 @@ public class XUnitTestRunType extends RunType {
             frameworkMatcher = "4.[56](\\.[0-9]+)?"; // Match 4.5+
         }
 
-        String platform = runParameters.get(StringConstants.ParameterName_Platform);
         String platformMatcher = null;
         if (platform.equals(Platforms.MSIL)) {
             platformMatcher = "(x86|x64)";
