@@ -72,6 +72,20 @@ public final class Runners {
                 return sb.toString();
             }
         });
+		
+		AvailableRunners.put("2.2.0-beta3", new RunnerVersion("2.2.0-beta3",
+                new String[]{Runtime.dotNET45},
+                new String[]{Platforms.x86, Platforms.MSIL}) {
+            @Override
+            public String getRunnerPath(String runtime, String platform) {
+                StringBuilder sb = new StringBuilder();
+                sb.append("xunit.console");
+                if (platform.equals(Platforms.x86))
+                    sb.append(".x86");
+                sb.append(".exe");
+                return sb.toString();
+            }
+        });
     }
 }
 
