@@ -114,7 +114,7 @@ class XUnitBuildProcess extends FutureBasedBuildProcess {
                         logger.warning(s);
                     }
                 });
-
+                
                 while (true) {
                     int liveProcessCount = 0;
                     for (Map.Entry<Process, String> p : processes.entrySet()) {
@@ -129,11 +129,17 @@ class XUnitBuildProcess extends FutureBasedBuildProcess {
 
             for (Map.Entry<Process, String> p : processes.entrySet()) {
                 int exitCode = p.getKey().waitFor();
-                if (exitCode != 0) {
-                    logger.warning("Test runner exited with non-zero status!");
-                    status = BuildFinishedStatus.FINISHED_FAILED;
+                if (version.charAt(0) == '2' && version.charAt(2) == '2') {
+                    // From 2.2 the exit code actually indicates if there was an error with the command line / runtime. https://github.com/xunit/xunit/issues/659
+                    if(exitCode > 1) {
+                        logger.warning("Test runner exited with status larger then 1! Actuall status code was " + exitCode + " expected status code was 0 or 1");
+                        status = BuildFinishedStatus.FINISHED_FAILED; 
+                    }   
                 }
-                logger.activityFinished(p.getValue(), DefaultMessagesInfo.BLOCK_TYPE_MODULE);
+                // Checking the exit code on versions below 2.2 is actually useless, as they break the TeamCity function to ignore failed tests.
+                // The exit code on older versions of xunit always indicates the number of failed tests.
+                
+                logger.activityFinished(activityBlockName, DefaultMessagesInfo.BLOCK_TYPE_MODULE);
             }
             return status;
         } catch (Exception e) {
