@@ -1,26 +1,26 @@
 package se.capeit.dev.xunittestrunner;
 
+import com.intellij.openapi.util.SystemInfo;
 import jetbrains.buildServer.agent.AgentRunningBuild;
 import jetbrains.buildServer.agent.BuildFinishedStatus;
-import jetbrains.buildServer.agent.BuildProgressLogger;
 import jetbrains.buildServer.agent.BuildRunnerContext;
 import jetbrains.buildServer.messages.DefaultMessagesInfo;
 import jetbrains.buildServer.util.AntPatternFileFinder;
-import jetbrains.buildServer.util.StringUtil;
 import jetbrains.buildServer.util.CollectionsUtil;
+import jetbrains.buildServer.util.StringUtil;
 import org.jetbrains.annotations.NotNull;
-import com.intellij.openapi.util.SystemInfo;
 
 import java.io.File;
 import java.io.InputStream;
-import java.util.Map;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Scanner;
 
 class XUnitBuildProcess extends FutureBasedBuildProcess {
     private final AgentRunningBuild buildingAgent;
     private final BuildRunnerContext context;
-    private Process testRunnerProcess;
+    private HashMap<Process, String> processes = new HashMap<>();
 
     public XUnitBuildProcess(@NotNull final BuildRunnerContext context) {
         super(context);
@@ -29,24 +29,23 @@ class XUnitBuildProcess extends FutureBasedBuildProcess {
         this.buildingAgent = context.getBuild();
     }
 
-    private String getParameter(@NotNull final String parameterName)
-    {
+    private String getParameter(@NotNull final String parameterName) {
         final String value = context.getRunnerParameters().get(parameterName);
         if (value == null || value.trim().length() == 0) return "";
         return value.trim();
     }
 
     private List<String> getAssemblies(final String rawAssemblyParameter) {
-        String withSlashesFixed = rawAssemblyParameter.replace('\\','/');
+        String withSlashesFixed = rawAssemblyParameter.replace('\\', '/');
         List<String> assemblies = StringUtil.split(withSlashesFixed, true, ',', ';', '\n', '\r');
         return assemblies;
     }
 
     protected void cancelBuild() {
-        if (testRunnerProcess == null)
-            return;
-
-        testRunnerProcess.destroy();
+        for (Map.Entry<Process, String> p : processes.entrySet()) {
+            p.getKey().destroy();
+        }
+        processes.clear();
     }
 
     public BuildFinishedStatus call() throws Exception {
@@ -69,14 +68,15 @@ class XUnitBuildProcess extends FutureBasedBuildProcess {
 
             // Find the files, and run them through the test runner
             AntPatternFileFinder finder = new AntPatternFileFinder(
-                CollectionsUtil.toStringArray(assemblies),
-                CollectionsUtil.toStringArray(excludedAssemblies),
-                SystemInfo.isFileSystemCaseSensitive);
+                    CollectionsUtil.toStringArray(assemblies),
+                    CollectionsUtil.toStringArray(excludedAssemblies),
+                    SystemInfo.isFileSystemCaseSensitive);
             File[] assemblyFiles = finder.findFiles(context.getWorkingDirectory());
-            if(assemblyFiles.length == 0) {
+            if (assemblyFiles.length == 0) {
                 logger.warning("No assemblies were matched - no tests will be run!");
             }
-            for(File assembly : assemblyFiles) {
+
+            for (File assembly : assemblyFiles) {
                 String activityBlockName = "Testing " + assembly.getName();
                 logger.activityStarted(activityBlockName, assembly.getAbsolutePath(), DefaultMessagesInfo.BLOCK_TYPE_MODULE);
 
@@ -87,11 +87,12 @@ class XUnitBuildProcess extends FutureBasedBuildProcess {
 
                 // Copy environment variables
                 Map<String, String> env = processBuilder.environment();
-                for(Map.Entry<String, String> kvp : context.getBuildParameters().getEnvironmentVariables().entrySet()) {
+                for (Map.Entry<String, String> kvp : context.getBuildParameters().getEnvironmentVariables().entrySet()) {
                     env.put(kvp.getKey(), kvp.getValue());
                 }
 
-                testRunnerProcess = processBuilder.start();
+                Process testRunnerProcess = processBuilder.start();
+                processes.put(testRunnerProcess, activityBlockName);
 
                 redirectStreamToLogger(testRunnerProcess.getInputStream(), new RedirectionTarget() {
                     public void redirect(String s) {
@@ -104,27 +105,49 @@ class XUnitBuildProcess extends FutureBasedBuildProcess {
                     }
                 });
 
-                int exitCode = testRunnerProcess.waitFor();
-                if(exitCode != 0) {
-                    logger.warning("Test runner exited with non-zero status!");
-                    status = BuildFinishedStatus.FINISHED_FAILED; 
+                while (true) {
+                    int liveProcessCount = 0;
+                    for (Map.Entry<Process, String> p : processes.entrySet()) {
+                        if (isRunning(p.getKey())) {
+                            ++liveProcessCount;
+                        }
+                    }
+                    if (liveProcessCount < 5) break;
+                    Thread.sleep(100);
                 }
-
-                logger.activityFinished(activityBlockName, DefaultMessagesInfo.BLOCK_TYPE_MODULE);
             }
 
+            for (Map.Entry<Process, String> p : processes.entrySet()) {
+                int exitCode = p.getKey().waitFor();
+                if (exitCode != 0) {
+                    logger.warning("Test runner exited with non-zero status!");
+                    status = BuildFinishedStatus.FINISHED_FAILED;
+                }
+                logger.activityFinished(p.getValue(), DefaultMessagesInfo.BLOCK_TYPE_MODULE);
+            }
             return status;
-        }
-        catch(Exception e) {
+        } catch (Exception e) {
             logger.message("Failed to run tests");
             logger.exception(e);
             return BuildFinishedStatus.FINISHED_FAILED;
+        } finally {
+            processes.clear();
+        }
+    }
+
+    boolean isRunning(Process process) {
+        try {
+            process.exitValue();
+            return false;
+        } catch (Exception e) {
+            return true;
         }
     }
 
     private interface RedirectionTarget {
         void redirect(String s);
     }
+
     private void redirectStreamToLogger(final InputStream s, final RedirectionTarget target) {
         new Thread(new Runnable() {
             public void run() {
@@ -141,7 +164,7 @@ class XUnitBuildProcess extends FutureBasedBuildProcess {
         // This is quite crude at the moment, but does the job.
         // TODO: Migrate this into RunnerVersion or similar
         char majorVersion = version.charAt(0);
-        if(majorVersion == '1')
+        if (majorVersion == '1')
             return "/teamcity";
         return "-teamcity";
     }
