@@ -56,6 +56,56 @@
         </td>
     </tr>
     <tr>
+            <th>
+                <label for="${constants.parameterName_CommandLineArguments}">Command line arguments:</label>
+            </th>
+            <td>
+                <props:textProperty
+                        name="${constants.parameterName_CommandLineArguments}"
+                        className="longField"
+                        />
+                <span class="error" id="error_${constants.parameterName_CommandLineArguments}"></span>
+                <span class="smallNote"><pre>Valid options:
+  -nologo                : do not show the copyright message
+  -nocolor               : do not output results with colors
+  -noappdomain           : do not use app domains to run test code
+  -failskips             : convert skipped tests into failures
+  -parallel option       : set parallelization based on option
+                         :   none        - turn off all parallelization
+                         :   collections - only parallelize collections
+                         :   assemblies  - only parallelize assemblies
+                         :   all         - parallelize assemblies & collections
+  -maxthreads count      : maximum thread count for collection parallelization
+                         :   default   - run with default (1 thread per CPU thread)
+                         :   unlimited - run with unbounded thread count
+                         :   (number)  - limit task thread pool size to 'count'
+  -noshadow              : do not shadow copy assemblies
+  -wait                  : wait for input after completion
+  -diagnostics           : enable diagnostics messages for all test assemblies
+  -debug                 : launch the debugger to debug the tests
+  -serialize             : serialize all test cases (for diagnostic purposes only)
+  -trait "name=value"    : only run tests with matching name/value traits
+                         : if specified more than once, acts as an OR operation
+  -notrait "name=value"  : do not run tests with matching name/value traits
+                         : if specified more than once, acts as an AND operation
+  -method "name"         : run a given test method (should be fully specified;
+                         : i.e., 'MyNamespace.MyClass.MyTestMethod')
+                         : if specified more than once, acts as an OR operation
+  -class "name"          : run all methods in a given test class (should be fully
+                         : specified; i.e., 'MyNamespace.MyClass')
+                         : if specified more than once, acts as an OR operation
+  -namespace "name"      : run all methods in a given namespace (i.e.,
+                         : 'MyNamespace.MySubNamespace')
+                         : if specified more than once, acts as an OR operation
+
+Reporters: (optional, choose only one)
+  -appveyor              : forces AppVeyor CI mode (normally auto-detected)
+  -quiet                 : do not show progress messages
+  -teamcity              : forces TeamCity mode (normally auto-detected)
+  -verbose               : show verbose progress messages</pre></span>
+            </td>
+        </tr>
+    <tr>
         <th>
             <label for="${constants.parameterName_IncludedAssemblies}">Assemblies containing tests: </label>
         </th>

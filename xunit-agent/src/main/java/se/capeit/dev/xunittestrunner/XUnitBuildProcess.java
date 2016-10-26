@@ -12,10 +12,9 @@ import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
 import java.io.InputStream;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Scanner;
+import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 class XUnitBuildProcess extends FutureBasedBuildProcess {
     private final AgentRunningBuild buildingAgent;
@@ -61,6 +60,7 @@ class XUnitBuildProcess extends FutureBasedBuildProcess {
             logger.message("Starting test runner at " + runnerPath);
 
             List<String> assemblies = getAssemblies(getParameter(StringConstants.ParameterName_IncludedAssemblies));
+            String commandLineArguments = getParameter(StringConstants.ParameterName_CommandLineArguments);
             List<String> excludedAssemblies = getAssemblies(getParameter(StringConstants.ParameterName_ExcludedAssemblies));
             excludedAssemblies.add("**/obj/**"); // We always exclude **/obj/**
 
@@ -82,8 +82,18 @@ class XUnitBuildProcess extends FutureBasedBuildProcess {
 
                 String filePath = assembly.getAbsolutePath();
                 String commandLineFlags = getCommandLineFlags(version);
-                logger.message("Commandline: " + runnerPath + " " + filePath + " " + commandLineFlags);
-                ProcessBuilder processBuilder = new ProcessBuilder(runnerPath, filePath, commandLineFlags);
+                logger.message("Commandline: " + runnerPath + " " + filePath + " " + commandLineFlags + " " + commandLineArguments);
+
+                List<String> commandLine = new ArrayList<>();
+                commandLine.add(runnerPath);
+                commandLine.add(filePath);
+                commandLine.add(commandLineFlags);
+
+                Matcher m = Pattern.compile("([^\"]\\S*|\".+?\")\\s*").matcher(commandLineArguments);
+                while (m.find())
+                    commandLine.add(m.group(1).replace("\"", ""));
+
+                ProcessBuilder processBuilder = new ProcessBuilder(commandLine);
 
                 // Copy environment variables
                 Map<String, String> env = processBuilder.environment();

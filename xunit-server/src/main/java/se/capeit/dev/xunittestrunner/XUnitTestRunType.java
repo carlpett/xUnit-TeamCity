@@ -141,7 +141,10 @@ public class XUnitTestRunType extends RunType {
         sb.append("/");
         sb.append(parameters.get(StringConstants.ParameterName_RuntimeVersion));
         sb.append(")");
-        
+
+        sb.append("\nCommand line arguments: ");
+        sb.append(parameters.get(StringConstants.ParameterName_CommandLineArguments));
+
         sb.append("\nIncluded assemblies: ");
         sb.append(parameters.get(StringConstants.ParameterName_IncludedAssemblies));
 
