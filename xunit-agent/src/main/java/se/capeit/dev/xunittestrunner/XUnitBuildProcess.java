@@ -139,7 +139,7 @@ class XUnitBuildProcess extends FutureBasedBuildProcess {
                 // Checking the exit code on versions below 2.2 is actually useless, as they break the TeamCity function to ignore failed tests.
                 // The exit code on older versions of xunit always indicates the number of failed tests.
                 
-                logger.activityFinished(activityBlockName, DefaultMessagesInfo.BLOCK_TYPE_MODULE);
+                logger.activityFinished(p.getValue(), DefaultMessagesInfo.BLOCK_TYPE_MODULE);
             }
             return status;
         } catch (Exception e) {
