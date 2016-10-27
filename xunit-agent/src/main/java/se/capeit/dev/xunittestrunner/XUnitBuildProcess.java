@@ -55,6 +55,9 @@ class XUnitBuildProcess extends FutureBasedBuildProcess {
             String platform = getParameter(StringConstants.ParameterName_Platform);
             logger.message("Runner parameters { Version = " + version + ", runtime = " + runtime + ", platform = " + platform + "}");
 
+            int numberOfParallelProcesses = Integer.parseInt(getParameter(StringConstants.ParameterName_NumberOfParallelProcesses));
+            logger.message("Number of parallel processes is set to: " + numberOfParallelProcesses);
+
             File agentToolsDirectory = buildingAgent.getAgentConfiguration().getAgentToolsDirectory();
             String runnerPath = new File(agentToolsDirectory, "xunit-runner\\bin\\" + version + "\\" + runner.getRunnerPath(runtime, platform)).getPath();
             logger.message("Starting test runner at " + runnerPath);
@@ -122,7 +125,7 @@ class XUnitBuildProcess extends FutureBasedBuildProcess {
                             ++liveProcessCount;
                         }
                     }
-                    if (liveProcessCount < 5) break;
+                    if (liveProcessCount < numberOfParallelProcesses) break;
                     Thread.sleep(100);
                 }
             }

@@ -56,16 +56,30 @@
         </td>
     </tr>
     <tr>
-            <th>
-                <label for="${constants.parameterName_CommandLineArguments}">Command line arguments:</label>
-            </th>
-            <td>
-                <props:textProperty
-                        name="${constants.parameterName_CommandLineArguments}"
-                        className="longField"
-                        />
-                <span class="error" id="error_${constants.parameterName_CommandLineArguments}"></span>
-                <span class="smallNote"><pre>Valid options:
+        <th>
+            <label for="${constants.parameterName_NumberOfParallelProcesses}">Number of parallel running processes:</label>
+        </th>
+        <td>
+            <props:textProperty
+                    name="${constants.parameterName_NumberOfParallelProcesses}"
+                    className="longField" />
+            <span class="error" id="error_${constants.parameterName_NumberOfParallelProcesses}"></span>
+            <span class="smallNote">
+                Enter number of parallel processes.
+            </span>
+        </td>
+    </tr>
+    <tr>
+        <th>
+            <label for="${constants.parameterName_CommandLineArguments}">Command line arguments:</label>
+        </th>
+        <td>
+            <props:textProperty
+                    name="${constants.parameterName_CommandLineArguments}"
+                    className="longField"
+                    />
+            <span class="error" id="error_${constants.parameterName_CommandLineArguments}"></span>
+            <span class="smallNote"><pre>Valid options:
   -nologo                : do not show the copyright message
   -nocolor               : do not output results with colors
   -noappdomain           : do not use app domains to run test code
@@ -102,9 +116,10 @@ Reporters: (optional, choose only one)
   -appveyor              : forces AppVeyor CI mode (normally auto-detected)
   -quiet                 : do not show progress messages
   -teamcity              : forces TeamCity mode (normally auto-detected)
-  -verbose               : show verbose progress messages</pre></span>
-            </td>
-        </tr>
+  -verbose               : show verbose progress messages</pre>
+            </span>
+        </td>
+    </tr>
     <tr>
         <th>
             <label for="${constants.parameterName_IncludedAssemblies}">Assemblies containing tests: </label>

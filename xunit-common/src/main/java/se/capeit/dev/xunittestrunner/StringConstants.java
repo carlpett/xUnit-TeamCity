@@ -6,6 +6,7 @@ public final class StringConstants {
 
     public static final String ParameterName_XUnitVersion = "xUnitVersion";
     public static final String ParameterName_CommandLineArguments = "commandLineArguments";
+    public static final String ParameterName_NumberOfParallelProcesses = "numberOfParallelProcesses";
     public static final String ParameterName_IncludedAssemblies = "includedAssemblies";
     public static final String ParameterName_ExcludedAssemblies = "excludedAssemblies";
     public static final String ParameterName_Platform = "runnerPlatform";
@@ -17,6 +18,9 @@ public final class StringConstants {
     }
     public String getParameterName_CommandLineArguments() {
         return ParameterName_CommandLineArguments;
+    }
+    public String getParameterName_NumberOfParallelProcesses() {
+        return ParameterName_NumberOfParallelProcesses;
     }
     public String getParameterName_IncludedAssemblies() {
         return ParameterName_IncludedAssemblies;
