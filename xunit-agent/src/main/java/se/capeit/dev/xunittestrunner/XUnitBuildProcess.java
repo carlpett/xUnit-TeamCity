@@ -47,6 +47,15 @@ class XUnitBuildProcess extends FutureBasedBuildProcess {
         processes.clear();
     }
 
+    private int tryParseInt(String stringValue, int defaultValue) {
+        try {
+            return Integer.parseInt(stringValue);
+        }
+        catch (NumberFormatException e) {
+            return defaultValue;
+        }
+    }
+
     public BuildFinishedStatus call() throws Exception {
         try {
             String version = getParameter(StringConstants.ParameterName_XUnitVersion);
@@ -55,7 +64,7 @@ class XUnitBuildProcess extends FutureBasedBuildProcess {
             String platform = getParameter(StringConstants.ParameterName_Platform);
             logger.message("Runner parameters { Version = " + version + ", runtime = " + runtime + ", platform = " + platform + "}");
 
-            int numberOfParallelProcesses = Integer.parseInt(getParameter(StringConstants.ParameterName_NumberOfParallelProcesses));
+            int numberOfParallelProcesses = tryParseInt(getParameter(StringConstants.ParameterName_NumberOfParallelProcesses), 1);
             logger.message("Number of parallel processes is set to: " + numberOfParallelProcesses);
 
             File agentToolsDirectory = buildingAgent.getAgentConfiguration().getAgentToolsDirectory();
