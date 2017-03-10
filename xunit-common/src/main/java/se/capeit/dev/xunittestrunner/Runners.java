@@ -73,7 +73,7 @@ public final class Runners {
             }
         });
 		
-		AvailableRunners.put("2.2.0-beta3", new RunnerVersion("2.2.0-beta3",
+		AvailableRunners.put("2.2.0", new RunnerVersion("2.2.0",
                 new String[]{Runtime.dotNET45},
                 new String[]{Platforms.x86, Platforms.MSIL}) {
             @Override

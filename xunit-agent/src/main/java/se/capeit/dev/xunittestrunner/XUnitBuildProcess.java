@@ -144,7 +144,7 @@ class XUnitBuildProcess extends FutureBasedBuildProcess {
                 if (version.charAt(0) == '2' && version.charAt(2) == '2') {
                     // From 2.2 the exit code actually indicates if there was an error with the command line / runtime. https://github.com/xunit/xunit/issues/659
                     if(exitCode > 1) {
-                        logger.warning("Test runner exited with status larger then 1! Actuall status code was " + exitCode + " expected status code was 0 or 1");
+                        logger.warning("Test runner exited with runtime error! Returned status code was " + exitCode);
                         status = BuildFinishedStatus.FINISHED_FAILED; 
                     }   
                 }
