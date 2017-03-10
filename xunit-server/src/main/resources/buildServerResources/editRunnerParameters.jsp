@@ -69,9 +69,13 @@
             </span>
         </td>
     </tr>
-    <tr>
+    <tr class="advancedSetting">
         <th>
-            <label for="${constants.parameterName_CommandLineArguments}">Command line arguments:</label>
+            <label for="${constants.parameterName_CommandLineArguments}">
+                Command line arguments:
+                <a id="display-commandline-help" class="helpIcon"
+                   title="Show available options"><i class="icon icon16 tc-icon_help_small"></i></a>
+            </label>
         </th>
         <td>
             <props:textProperty
@@ -79,44 +83,91 @@
                     className="longField"
                     />
             <span class="error" id="error_${constants.parameterName_CommandLineArguments}"></span>
-            <span class="smallNote"><pre>Valid options:
-  -nologo                : do not show the copyright message
-  -nocolor               : do not output results with colors
-  -noappdomain           : do not use app domains to run test code
-  -failskips             : convert skipped tests into failures
-  -parallel option       : set parallelization based on option
-                         :   none        - turn off all parallelization
-                         :   collections - only parallelize collections
-                         :   assemblies  - only parallelize assemblies
-                         :   all         - parallelize assemblies & collections
-  -maxthreads count      : maximum thread count for collection parallelization
-                         :   default   - run with default (1 thread per CPU thread)
-                         :   unlimited - run with unbounded thread count
-                         :   (number)  - limit task thread pool size to 'count'
-  -noshadow              : do not shadow copy assemblies
-  -wait                  : wait for input after completion
-  -diagnostics           : enable diagnostics messages for all test assemblies
-  -debug                 : launch the debugger to debug the tests
-  -serialize             : serialize all test cases (for diagnostic purposes only)
-  -trait "name=value"    : only run tests with matching name/value traits
-                         : if specified more than once, acts as an OR operation
-  -notrait "name=value"  : do not run tests with matching name/value traits
-                         : if specified more than once, acts as an AND operation
-  -method "name"         : run a given test method (should be fully specified;
-                         : i.e., 'MyNamespace.MyClass.MyTestMethod')
-                         : if specified more than once, acts as an OR operation
-  -class "name"          : run all methods in a given test class (should be fully
-                         : specified; i.e., 'MyNamespace.MyClass')
-                         : if specified more than once, acts as an OR operation
-  -namespace "name"      : run all methods in a given namespace (i.e.,
-                         : 'MyNamespace.MySubNamespace')
-                         : if specified more than once, acts as an OR operation
-
-Reporters: (optional, choose only one)
-  -appveyor              : forces AppVeyor CI mode (normally auto-detected)
-  -quiet                 : do not show progress messages
-  -teamcity              : forces TeamCity mode (normally auto-detected)
-  -verbose               : show verbose progress messages</pre>
+            <span class="smallNote" id="commandline-help-container">
+                <pre id="commandline-help-1.9.2">
+/trait "name=value"    : only run tests with matching name/value traits
+                       : if specified more than once, acts as an OR operation
+/-trait "name=value"   : do not run tests with matching name/value traits
+                       : if specified more than once, acts as an AND operation
+/noshadow              : do not shadow copy assemblies
+                </pre>
+                <pre id="commandline-help-2.0.0">
+-parallel option       : set parallelization based on option
+                       :   none - turn off all parallelization
+                       :   collections - only parallelize collections
+                       :   assemblies - only parallelize assemblies
+                       :   all - parallelize assemblies & collections
+-maxthreads count      : maximum thread count for collection parallelization
+                       :   0 - run with unbounded thread count
+                       :   >0 - limit task thread pool size to 'count'
+-noshadow              : do not shadow copy assemblies
+-trait "name=value"    : only run tests with matching name/value traits
+                       : if specified more than once, acts as an OR operation
+-notrait "name=value"  : do not run tests with matching name/value traits
+                       : if specified more than once, acts as an AND operation
+-method "name"         : run a given test method (should be fully specified;
+                       : i.e., 'MyNamespace.MyClass.MyTestMethod')
+                       : if specified more than once, acts as an OR operation
+-class "name"          : run all methods in a given test class (should be fully
+                       : specified; i.e., 'MyNamespace.MyClass')
+                       : if specified more than once, acts as an OR operation
+                </pre>
+                <pre id="commandline-help-2.1.0">
+-noappdomain           : do not use app domains to run test code
+-failskips             : convert skipped tests into failures
+-parallel option       : set parallelization based on option
+                       :   none        - turn off all parallelization
+                       :   collections - only parallelize collections
+                       :   assemblies  - only parallelize assemblies
+                       :   all         - parallelize assemblies & collections
+-maxthreads count      : maximum thread count for collection parallelization
+                       :   default   - run with default (1 thread per CPU thread)
+                       :   unlimited - run with unbounded thread count
+                       :   (number)  - limit task thread pool size to 'count'
+-noshadow              : do not shadow copy assemblies
+-trait "name=value"    : only run tests with matching name/value traits
+                       : if specified more than once, acts as an OR operation
+-notrait "name=value"  : do not run tests with matching name/value traits
+                       : if specified more than once, acts as an AND operation
+-method "name"         : run a given test method (should be fully specified;
+                       : i.e., 'MyNamespace.MyClass.MyTestMethod')
+                       : if specified more than once, acts as an OR operation
+-class "name"          : run all methods in a given test class (should be fully
+                       : specified; i.e., 'MyNamespace.MyClass')
+                       : if specified more than once, acts as an OR operation
+-namespace "name"      : run all methods in a given namespace (i.e.,
+                       : 'MyNamespace.MySubNamespace')
+                       : if specified more than once, acts as an OR operation
+-verbose               : show verbose progress messages
+                </pre>
+                <pre id="commandline-help-2.2.0">
+-noappdomain           : do not use app domains to run test code
+-failskips             : convert skipped tests into failures
+-parallel option       : set parallelization based on option
+                       :   none        - turn off all parallelization
+                       :   collections - only parallelize collections
+                       :   assemblies  - only parallelize assemblies
+                       :   all         - parallelize assemblies & collections
+-maxthreads count      : maximum thread count for collection parallelization
+                       :   default   - run with default (1 thread per CPU thread)
+                       :   unlimited - run with unbounded thread count
+                       :   (number)  - limit task thread pool size to 'count'
+-noshadow              : do not shadow copy assemblies
+-trait "name=value"    : only run tests with matching name/value traits
+                       : if specified more than once, acts as an OR operation
+-notrait "name=value"  : do not run tests with matching name/value traits
+                       : if specified more than once, acts as an AND operation
+-method "name"         : run a given test method (should be fully specified;
+                       : i.e., 'MyNamespace.MyClass.MyTestMethod')
+                       : if specified more than once, acts as an OR operation
+-class "name"          : run all methods in a given test class (should be fully
+                       : specified; i.e., 'MyNamespace.MyClass')
+                       : if specified more than once, acts as an OR operation
+-namespace "name"      : run all methods in a given namespace (i.e.,
+                       : 'MyNamespace.MySubNamespace')
+                       : if specified more than once, acts as an OR operation
+-verbose               : show verbose progress messages
+                </pre>
             </span>
         </td>
     </tr>
@@ -200,10 +251,17 @@ Reporters: (optional, choose only one)
                         // TODO: Toggle visibility for non-dropdowns 
                     }
                 }
+                // Hide all the commandline references
+                $j("#commandline-help-container pre").hide();
                 
                 $j("select.version-dependent").ufd('changeOptions');
             });
 
             $j("#xunit-version-selector").change();
+
+            $j("#display-commandline-help").click(function() {
+                var activeVersion = $j("#xunit-version-selector :selected").val();
+                document.getElementById("commandline-help-" + activeVersion).toggle();
+            });
         });
 </script>
