@@ -1,6 +1,5 @@
 package se.capeit.dev.xunittestrunner;
 
-import jetbrains.buildServer.dotNet.DotNetConstants;
 import jetbrains.buildServer.requirements.Requirement;
 import jetbrains.buildServer.requirements.RequirementType;
 import jetbrains.buildServer.serverSide.InvalidProperty;
@@ -141,7 +140,13 @@ public class XUnitTestRunType extends RunType {
         sb.append("/");
         sb.append(parameters.get(StringConstants.ParameterName_RuntimeVersion));
         sb.append(")");
-        
+
+        sb.append("\nCommand line arguments: ");
+        sb.append(parameters.get(StringConstants.ParameterName_CommandLineArguments));
+
+        sb.append("\nNumber of parallel processes: ");
+        sb.append(parameters.get(StringConstants.ParameterName_NumberOfParallelProcesses));
+
         sb.append("\nIncluded assemblies: ");
         sb.append(parameters.get(StringConstants.ParameterName_IncludedAssemblies));
 

@@ -5,8 +5,18 @@
         <layout>
             <executable-files>
                 <include name='bin/1.9.2/xunit.console.clr4.exe'/>
+                <include name='bin/1.9.2/xunit.console.clr4.x86.exe'/>
+                <include name='bin/1.9.2/xunit.console.exe'/>
+                <include name='bin/1.9.2/xunit.console.exe'/>
+
                 <include name='bin/2.0.0/xunit.console.exe'/>
-		 <include name='bin/2.1.0/xunit.console.exe'/>
+                <include name='bin/2.0.0/xunit.console.x86.exe'/>
+
+                <include name='bin/2.1.0/xunit.console.exe'/>
+                <include name='bin/2.1.0/xunit.console.x86.exe'/>
+
+                <include name='bin/2.2.0/xunit.console.exe'/>
+                <include name='bin/2.2.0/xunit.console.x86.exe'/>
             </executable-files>
         </layout>
     </tool-deployment>
