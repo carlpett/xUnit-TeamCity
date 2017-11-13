@@ -111,7 +111,7 @@ public class XUnitTestRunType extends RunType {
             frameworkMatcher = "4.[0-9\\.]+"; // Match any 4.x
         }
         else if (runtime.equals(Runtime.dotNET45)) {
-            frameworkMatcher = "4.[56](\\.[0-9]+)?"; // Match 4.5+
+            frameworkMatcher = "4.[5-9](\\.[0-9]+)?"; // Match 4.5+
         }
 
         String platformMatcher = null;
