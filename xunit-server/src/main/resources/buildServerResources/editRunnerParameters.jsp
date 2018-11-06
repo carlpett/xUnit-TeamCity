@@ -227,6 +227,8 @@
         $j(document).ready(function() {
             $j("select.version-dependent").each(function(idx) {
                 var elem = $j(this);
+                // Store any old value select state
+                elem.find('option:selected').data('initial-selection','true');
                 elem.data('options', elem.find("option").detach());
             });
 
@@ -235,16 +237,23 @@
                 var features = featureMatrix[selected];
                 for(var feature in features) {
                     var enabled = features[feature];
-                    console.log(feature + ':' + enabled);
                     var featureElement = $j('#' + feature);
 
                     if(featureElement.is("select")) {
+                        var value = "";
                         var options = featureElement.data('options').filter(function(idx, elem) { 
+                            if($j(elem).data('initial-selection') === 'true') {
+                                value = elem.value;
+                            }
                             return $j.inArray(elem.text, enabled) != -1;
                         });
                         featureElement.empty() // Remove all existing options
                                       .append(options);
-
+                        if(value !== "") {
+                            featureElement.val(value); // Set the selected element
+                        } else {
+                            console.log('No selected value to set');
+                        }
                         // TODO: Add some debug element in case featureElement is now empty
                     }
                     else {
