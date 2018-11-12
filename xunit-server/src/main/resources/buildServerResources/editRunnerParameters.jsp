@@ -168,6 +168,84 @@
                        : if specified more than once, acts as an OR operation
 -verbose               : show verbose progress messages
                 </pre>
+                <pre id="commandline-help-2.3.x">
+-noappdomain           : do not use app domains to run test code
+-failskips             : convert skipped tests into failures
+-stoponfail            : stop on first test failure
+-parallel option       : set parallelization based on option
+                       :   none        - turn off all parallelization
+                       :   collections - only parallelize collections
+                       :   assemblies  - only parallelize assemblies
+                       :   all         - parallelize assemblies & collections
+-maxthreads count      : maximum thread count for collection parallelization
+                       :   default   - run with default (1 thread per CPU thread)
+                       :   unlimited - run with unbounded thread count
+                       :   (number)  - limit task thread pool size to 'count'
+-noshadow              : do not shadow copy assemblies
+-wait                  : wait for input after completion
+-diagnostics           : enable diagnostics messages for all test assemblies
+-internaldiagnostics   : enable internal diagnostics messages for all test assemblies
+-debug                 : launch the debugger to debug the tests
+-serialize             : serialize all test cases (for diagnostic purposes only)
+-trait "name=value"    : only run tests with matching name/value traits
+                       : if specified more than once, acts as an OR operation
+-notrait "name=value"  : do not run tests with matching name/value traits
+                       : if specified more than once, acts as an AND operation
+-method "name"         : run a given test method (should be fully specified;
+                       : i.e., 'MyNamespace.MyClass.MyTestMethod')
+                       : if specified more than once, acts as an OR operation
+-class "name"          : run all methods in a given test class (should be fully
+                       : specified; i.e., 'MyNamespace.MyClass')
+                       : if specified more than once, acts as an OR operation
+-namespace "name"      : run all methods in a given namespace (i.e.,
+                       : 'MyNamespace.MySubNamespace')
+                       : if specified more than once, acts as an OR operation
+                </pre>
+                <pre id="commandline-help-2.4.x">
+-failskips             : convert skipped tests into failures
+-stoponfail            : stop on first test failure
+-parallel option       : set parallelization based on option
+                       :   none        - turn off all parallelization
+                       :   collections - only parallelize collections
+                       :   assemblies  - only parallelize assemblies
+                       :   all         - parallelize assemblies & collections
+-maxthreads count      : maximum thread count for collection parallelization
+                       :   default   - run with default (1 thread per CPU thread)
+                       :   unlimited - run with unbounded thread count
+                       :   (number)  - limit task thread pool size to 'count'
+-appdomains mode       : choose an app domain mode
+                       :   ifavailable - choose based on library type
+                       :   required    - force app domains on
+                       :   denied      - force app domains off
+-noshadow              : do not shadow copy assemblies
+-wait                  : wait for input after completion
+-diagnostics           : enable diagnostics messages for all test assemblies
+-internaldiagnostics   : enable internal diagnostics messages for all test assemblies
+-debug                 : launch the debugger to debug the tests
+-serialize             : serialize all test cases (for diagnostic purposes only)
+-trait "name=value"    : only run tests with matching name/value traits
+                       : if specified more than once, acts as an OR operation
+-notrait "name=value"  : do not run tests with matching name/value traits
+                       : if specified more than once, acts as an AND operation
+-method "name"         : run a given test method (can be fully specified or use a wildcard;
+                       : i.e., 'MyNamespace.MyClass.MyTestMethod' or '*.MyTestMethod')
+                       : if specified more than once, acts as an OR operation
+-nomethod "name"       : do not run a given test method (can be fully specified or use a wildcard;
+                       : i.e., 'MyNamespace.MyClass.MyTestMethod' or '*.MyTestMethod')
+                       : if specified more than once, acts as an AND operation
+-class "name"          : run all methods in a given test class (should be fully
+                       : specified; i.e., 'MyNamespace.MyClass')
+                       : if specified more than once, acts as an OR operation
+-noclass "name"        : do not run any methods in a given test class (should be fully
+                       : specified; i.e., 'MyNamespace.MyClass')
+                       : if specified more than once, acts as an AND operation
+-namespace "name"      : run all methods in a given namespace (i.e.,
+                       : 'MyNamespace.MySubNamespace')
+                       : if specified more than once, acts as an OR operation
+-nonamespace "name"    : do not run any methods in a given namespace (i.e.,
+                       : 'MyNamespace.MySubNamespace')
+                       : if specified more than once, acts as an AND operation
+                </pre>
             </span>
         </td>
     </tr>
