@@ -1,0 +1,57 @@
+version: 2
+jobs:
+  build:
+    docker:
+      - image: maven:3-jdk-9
+    steps:
+      - checkout
+      - run: git describe --always --tags | sed -r 's/^v//' | tee VERSION
+      - run: mvn package
+      - run:
+          name: Save test results
+          command: |
+            mkdir -p ~/junit/
+            find . -type f -regex ".*/target/surefire-reports/.*xml" -exec cp {} ~/junit/ \;
+          when: always
+      - store_test_results:
+          path: ~/junit
+      - store_artifacts:
+          path: target/xUnit.zip
+  release:
+    docker:
+      - image: maven:3-jdk-9
+    steps:
+      - checkout
+      - run: git describe --always --tags | sed -r 's/^v//' | tee VERSION
+      - run: mvn package
+      - run:
+          name: Download github-release tool
+          command: |
+            curl -sL 'https://github.com/aktau/github-release/releases/download/v0.6.2/linux-amd64-github-release.tar.bz2' | \
+              tar xvjf - --strip-components 3 -C $HOME/bin
+      - run:
+          name: Save test results
+          command: |
+            mkdir -p ~/junit/
+            find . -type f -regex ".*/target/surefire-reports/.*xml" -exec cp {} ~/junit/ \;
+          when: always
+      - store_test_results:
+          path: ~/junit
+      - run:
+          name: Upload release
+          command: |
+            github-release upload --user carlpett --repo xUnit-TeamCity --tag $CIRCLE_TAG --name xUnit.zip --file target/xUnit.zip
+      - store_artifacts:
+          path: target/xUnit.zip
+
+workflows:
+  version: 2
+  build_and_release:
+    jobs:
+      - build
+      - release:
+          filters:
+            branches:
+              ignore: /.*/
+            tags:
+              only: /^v.*/
