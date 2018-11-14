@@ -28,7 +28,7 @@ jobs:
           name: Download github-release tool
           command: |
             curl -sL 'https://github.com/aktau/github-release/releases/download/v0.6.2/linux-amd64-github-release.tar.bz2' | \
-              tar xvjf - --strip-components 3 -C $HOME/bin
+              tar xvjf - --strip-components 3 -C /bin
       - run:
           name: Save test results
           command: |
