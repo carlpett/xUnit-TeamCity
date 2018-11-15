@@ -6,12 +6,11 @@
     <display-name>xUnit</display-name>
     <version>@Version@</version>
     <description>Runs tests written in xUnit</description>
-    <!--<download-url>http://example.com</download-url>-->
+    <download-url>https://github.com/carlpett/xUnit-TeamCity/releases/download/@Version@/xUnit.zip</download-url>
     <email>carlpett@users.noreply.github.com</email>
     <vendor>
       <name>Capeit</name>
-      <!--<url>http://example.com</url>
-      <logo>http://example.com</logo>-->
+      <url>https://github.com/carlpett/xUnit-TeamCity</url>
     </vendor>
   </info>
   <deployment use-separate-classloader="true" />

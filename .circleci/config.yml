@@ -5,7 +5,11 @@ jobs:
       - image: maven:3-jdk-9
     steps:
       - checkout
-      - run: git describe --always --tags | sed -r 's/^v//' | tee VERSION
+      - run:
+          name: Set version
+          command: |
+            git describe --always --tags | sed -r 's/^v//' | tee VERSION
+            mvn versions:set -DnewVersion=$(cat VERSION)
       - run: mvn package
       - run:
           name: Save test results
@@ -22,7 +26,11 @@ jobs:
       - image: maven:3-jdk-9
     steps:
       - checkout
-      - run: git describe --always --tags | sed -r 's/^v//' | tee VERSION
+      - run:
+          name: Set version
+          command: |
+            git describe --always --tags | sed -r 's/^v//' | tee VERSION
+            mvn versions:set -DnewVersion=$(cat VERSION)
       - run: mvn package
       - run:
           name: Download github-release tool
